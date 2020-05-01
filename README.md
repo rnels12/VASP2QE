@@ -12,6 +12,6 @@ Once the binary is generated, one can just simplly use the following command if 
 
 or if POSCAR/CONTCAR in a different directory:
 
-./vasp2qe.x <path-to-poscar-or-contcar>/POSCAR
+./vasp2qe.x \<path-to-poscar-or-contcar\>/POSCAR
 
 The result will be output to the stdout. Once the QE input file is produced, you still need to set the values for the variables ecutwfc and nbnd, the pseudo-potential filenames, and the number of KPOINTS in order for the input file to be useable for a QE calculation.
