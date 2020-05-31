@@ -22,3 +22,6 @@ The result will be output to the stdout. Once the QE input file is produced, you
 
 UPDATE:
 The program can now take an int argument to specify a kpoint density for automatic setup of the number of k-mesh.
+An example can be found in the directory "example". The output (mp-720.scf.in) was produced with the following command:
+
+vasp2qe.x POSCAR_mp-720 8000 > mp-720.scf.in
