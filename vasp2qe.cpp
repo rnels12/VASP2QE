@@ -13,6 +13,7 @@
 #include <cstring>
 #include <cstdlib>
 #include "elements.h"
+#include<cmath>
 
 using namespace std;
 using namespace Eigen;
@@ -40,40 +41,20 @@ string GetEnv( const string & var ) {
 
 int main(int argc, char* argv[]){
 
+    if (argc < 2 ) {
+	Usage(argv[0]);
+	return 1;
+    }
+
     directory_iterator end_itr; // default construction yields past-the-end
     string vaspin = "";
-    if (argc < 2 ) {
-    	try {
-    	    for ( directory_iterator itr( "." ) ; itr != end_itr; ++itr ) {
-    		string fname = itr->path().filename().generic_string();
-		// cerr << "fname = " << fname << endl;
-		if (fname.compare("POSCAR") == 0) {
-		    vaspin="POSCAR";
-		    break;
-		}
-		else if (fname.compare("CONTCAR") == 0) {
-		    vaspin="CONTCAR";
-		    break;
-		}
-    	    }
-	    if (vaspin.empty()) throw runtime_error("ERROR: can't find POSCAR or CONTCAR!\n");
-    	}
-    	catch (const exception& e){
-	    cerr <<  e.what();
-    	    Usage(argv[0]);
-    	    return 1;
-    	}
-
+    string flag(argv[1]);
+    if (flag == "-c" || flag == "-C") {
+	author();
+	return 0;
     }
-    else { 
-	string flag(argv[1]);
-	if (flag == "-c" || flag == "-C") {
-	    author();
-	    return 0;
-	}
 
-	vaspin = argv[1]; 
-    }
+    vaspin = argv[1];
 
     std::ifstream vaspFile( vaspin.c_str() );
     if( !vaspFile || (vaspFile.peek() == std::ifstream::traits_type::eof()) ) {
@@ -289,9 +270,29 @@ int main(int argc, char* argv[]){
 
     }
 
+
     // print K_POINTS {automatic}
-    cout << "K_POINTS {automatic}\n"
-	 << "  XXKPOINTXX 0 0 0\n";
+    cout << "K_POINTS {automatic}\n";
+    string nkptString;
+    int kptDensity(-1);
+    istringstream itmp;
+    if (argc > 2) itmp.str(argv[2]);
+    if ( !(itmp >> kptDensity) || ! itmp.eof()) kptDensity = -1;       
+    if (kptDensity > 0){
+	int ngrid = kptDensity / natom;
+	int mult = pow(( ngrid 
+			* primVec.row(0).norm()
+			* primVec.row(1).norm() 
+			* primVec.row(2).norm() ), 1.0/3.0);
+	
+	Array3i nkpt;
+	for (int ikpt = 0; ikpt < 3; ++ikpt) {
+	    nkpt(ikpt) = round(mult / primVec.row(ikpt).norm());
+	    if (nkpt(ikpt) == 0) nkpt(ikpt) = 1;
+	}
+	cout << nkpt.transpose() << " 0 0 0\n";
+    }
+    else cout << "  XXKPOINTXX 0 0 0\n";
 
     return 0;
 
