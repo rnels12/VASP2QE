@@ -25,8 +25,7 @@ void Usage(string exe_name){
 }
 
 void author(){    
-    cerr << "Program is created by Ryky Nelson.\n"
-	 << "The use of the program is subject to the author's permission!\n";
+    cerr << "Program is created by Ryky Nelson.\n";
 }
 
 string GetEnv( const string & var ) {
